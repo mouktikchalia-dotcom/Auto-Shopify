@@ -22,9 +22,8 @@ login_url = "https://nanoscc.com/telegram_login.php?" + urllib.parse.urlencode(p
 session.get(login_url)
 phpsessid = session.cookies.get("PHPSESSID")
 
-print("Hey Nano", phpsessid)      # <<< KEEPING EXACT PRINT LINE
-
-print("\nBASIC CODERS — NANO FUCKED\n")   # <<< KEEPING EXACT PRINT LINE
+print("Hey Nano", phpsessid)
+print("\nBASIC CODERS — NANO FUCKED\n")
 
 # -----------------------------------------
 # SHOPIFY CHECKER SETTINGS
@@ -42,7 +41,6 @@ headers = {
 sites = "https://voyafly.com"
 proxy = "TITS.OOPS.WTF:6969:asyncio:requests"
 
-
 # -----------------------------------------
 # API ROUTES
 # -----------------------------------------
@@ -50,29 +48,27 @@ proxy = "TITS.OOPS.WTF:6969:asyncio:requests"
 def home():
     return "Shopify Checker API is running!"
 
-
-@app.route("/check", methods=["POST"])
-def check_cards():
+# GET method version
+@app.route("/check", methods=["GET"])
+def check_cards_get():
     """
-    Body example:
-    {
-        "cards": ["4111111111111111|12|25|123"]
-    }
+    Call example:
+    https://your-app-name.onrender.com/check?cards=4111111111111111|12|25|123,5555555555554444|11|26|321
     """
 
     try:
-        body = request.json
-        if not body or "cards" not in body:
-            return jsonify({"error": "Missing 'cards'"}), 400
+        cards_param = request.args.get("cards")
 
-        cards = body["cards"]
+        if not cards_param:
+            return jsonify({"error": "Missing 'cards' query parameter"}), 400
+
+        # Split by comma
+        cards = [c.strip() for c in cards_param.split(",") if c.strip()]
         results = []
 
-        print("\n🚀 Checking Started...\n")   # <<< SAME PRINT
+        print("\n🚀 Checking Started...\n")
 
         for card in cards:
-
-            # SAME PRINTS AS ORIGINAL CODE
             print("═══════════════════════════════════")
             print("💳 CARD:", card)
             print("🔍 RAW RESPONSE:")
@@ -98,7 +94,6 @@ def check_cards():
     except Exception as e:
         print("❌ ERROR:", e)
         return jsonify({"error": str(e)}), 500
-
 
 # -----------------------------------------
 # RUN SERVER
