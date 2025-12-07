@@ -1,2 +1,5 @@
 requests
 urllib3
+Flask
+requests
+gunicorn
