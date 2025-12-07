@@ -5,7 +5,7 @@ import urllib.parse
 app = Flask(__name__)
 
 # -----------------------------------------
-# LOGIN SESSION (same as your original code)
+# LOGIN SESSION (unchanged)
 # -----------------------------------------
 session = requests.Session()
 
@@ -26,7 +26,7 @@ print("Hey Nano", phpsessid)
 print("\nBASIC CODERS — NANO FUCKED\n")
 
 # -----------------------------------------
-# SHOPIFY CHECKER SETTINGS
+# SHOPIFY CHECKER SETTINGS (unchanged)
 # -----------------------------------------
 api_url = "https://nanoscc.com/api/shopify_checker.php"
 
@@ -48,22 +48,34 @@ proxy = "TITS.OOPS.WTF:6969:asyncio:requests"
 def home():
     return "Shopify Checker API is running!"
 
-# GET method version
 @app.route("/check", methods=["GET"])
 def check_cards_get():
     """
-    Call example:
-    https://your-app-name.onrender.com/check?cards=4111111111111111|12|25|123,5555555555554444|11|26|321
+    Call examples:
+    - Multiple cards: /check?cards=4111111111111111|12|25|123,5555555555554444|11|26|321
+    - Single card (old style): /check?card=9876545678765678|10|25|123
     """
 
     try:
+        # 1. Try to get 'cards' (for multiple, comma-separated inputs)
         cards_param = request.args.get("cards")
+        
+        # 2. If 'cards' is missing, try to get 'card' (for single input)
+        if not cards_param:
+            cards_param = request.args.get("card")
 
         if not cards_param:
-            return jsonify({"error": "Missing 'cards' query parameter"}), 400
+            return jsonify({"error": "Missing 'cards' or 'card' query parameter"}), 400
 
-        # Split by comma
-        cards = [c.strip() for c in cards_param.split(",") if c.strip()]
+        # Determine how to split the input
+        # If it contains a comma, we assume it's multiple cards separated by commas.
+        if "," in cards_param:
+             # Split by comma
+            cards = [c.strip() for c in cards_param.split(",") if c.strip()]
+        else:
+             # Treat the entire string as a single card
+            cards = [cards_param.strip()]
+            
         results = []
 
         print("\n🚀 Checking Started...\n")
@@ -96,7 +108,10 @@ def check_cards_get():
         return jsonify({"error": str(e)}), 500
 
 # -----------------------------------------
-# RUN SERVER
+# RUN SERVER (unchanged)
 # -----------------------------------------
 if __name__ == "__main__":
+    # Render's free tier uses the WEB_CONCURRENCY setting and may not execute this block
+    # However, it is good practice for local testing.
+    # Note: On Render, Gunicorn or a similar WSGI server will typically manage the application.
     app.run(host="0.0.0.0", port=10000)
